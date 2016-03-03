@@ -7,6 +7,7 @@
 struct Window
 {
 	HWND hwnd = 0;
+    HINSTANCE hInst = 0;
 	bool exists = false;
 	bool quitOnDestroy = false;
 
@@ -72,6 +73,7 @@ const bool Window::Create(const char *windowTitle, const uint32_t width, const u
 	if (c == 0)
 		return false;
 	hwnd = CreateWindowA("window", windowTitle, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL, NULL, hinst, NULL);
+    hInst = hinst;
 	if (hwnd == NULL)
 		return false;
 	ShowWindow(hwnd, SW_SHOW);
