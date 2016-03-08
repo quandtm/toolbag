@@ -16,9 +16,11 @@ struct Window
 	Window(const Window&) = delete;
 	~Window();
 
-	const bool Create(const char *windowTitle, const uint32_t x, const uint32_t y, const uint32_t width, const uint32_t height, const bool initForGL = false);
+	const bool Create(const char *windowTitle, const uint32_t x, const uint32_t y, const uint32_t width, const uint32_t height, const bool initForGL = false, const bool autoShow = true);
 	const bool NextMessage(MSG *msg, const bool thisWindowOnly = false);
 	void Destroy();
+	void Show();
+	void Hide();
 
 	static void UnusedMessage(const MSG *msg);
 };
@@ -63,7 +65,7 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 }
 
-const bool Window::Create(const char *windowTitle, const uint32_t x, const uint32_t y, const uint32_t width, const uint32_t height, const bool initForGL)
+const bool Window::Create(const char *windowTitle, const uint32_t x, const uint32_t y, const uint32_t width, const uint32_t height, const bool initForGL, const bool autoShow)
 {
 	HINSTANCE hinst = HINST_THISCOMPONENT;
 	WNDCLASSA cl = {};
@@ -82,11 +84,24 @@ const bool Window::Create(const char *windowTitle, const uint32_t x, const uint3
     hInst = hinst;
 	if (hwnd == NULL)
 		return false;
-	ShowWindow(hwnd, SW_SHOW);
+	if (autoShow)
+		ShowWindow(hwnd, SW_SHOW);
     if (initForGL)
         dc = GetDC(hwnd);
 	exists = true;
 	return true;
+}
+
+void Window::Show()
+{
+	if (hwnd != NULL)
+		ShowWindow(hwnd, SW_SHOW);
+}
+
+void Window::Hide()
+{
+	if (hwnd != NULL)
+		ShowWindow(hwnd, SW_HIDE);
 }
 
 const bool Window::NextMessage(MSG *msg, const bool thisWindowOnly)
