@@ -147,10 +147,13 @@ void Window::Destroy()
 
 #ifdef WINMAIN_WRAPPER
 #include <stdlib.h>
-int _cdecl main(int argc, char **argv);
+#ifndef ENTRYPOINT
+#define ENTRYPOINT main
+#endif
+int _cdecl ENTRYPOINT(int argc, char **argv);
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	return main(__argc, __argv);
+	return ENTRYPOINT(__argc, __argv);
 }
 #endif
 #endif
