@@ -15,7 +15,7 @@ struct Window
 	Window(const Window&) = delete;
 	~Window();
 
-	const bool Create(const char *windowTitle, const uint32_t x, const uint32_t y, const uint32_t width, const uint32_t height);
+	const bool Create(const char *windowTitle, const uint32_t x, const uint32_t y, const uint32_t width, const uint32_t height, const bool initForGL = false);
 	const bool NextMessage(MSG *msg, const bool thisWindowOnly = false);
 	void Destroy();
 
@@ -62,10 +62,12 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 }
 
-const bool Window::Create(const char *windowTitle, const uint32_t x, const uint32_t y, const uint32_t width, const uint32_t height)
+const bool Window::Create(const char *windowTitle, const uint32_t x, const uint32_t y, const uint32_t width, const uint32_t height, const bool initForGL)
 {
 	HINSTANCE hinst = HINST_THISCOMPONENT;
 	WNDCLASSA cl = {};
+    if (initForGL)
+        cl.style = CS_OWNDC;
 	cl.lpfnWndProc = WndProc;
 	cl.hInstance = hinst;
 	cl.lpszClassName = "window";
