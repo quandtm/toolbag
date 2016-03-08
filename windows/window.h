@@ -15,7 +15,7 @@ struct Window
 	Window(const Window&) = delete;
 	~Window();
 
-	const bool Create(const char *windowTitle, const uint32_t width, const uint32_t height);
+	const bool Create(const char *windowTitle, const uint32_t x, const uint32_t y, const uint32_t width, const uint32_t height);
 	const bool NextMessage(MSG *msg, const bool thisWindowOnly = false);
 	void Destroy();
 
@@ -62,7 +62,7 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 }
 
-const bool Window::Create(const char *windowTitle, const uint32_t width, const uint32_t height)
+const bool Window::Create(const char *windowTitle, const uint32_t x, const uint32_t y, const uint32_t width, const uint32_t height)
 {
 	HINSTANCE hinst = HINST_THISCOMPONENT;
 	WNDCLASSA cl = {};
@@ -72,7 +72,10 @@ const bool Window::Create(const char *windowTitle, const uint32_t width, const u
 	ATOM c = RegisterClassA(&cl);
 	if (c == 0)
 		return false;
-	hwnd = CreateWindowA("window", windowTitle, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL, NULL, hinst, NULL);
+
+    uint32_t wx = (x == 0 ? CW_USEDEFAULT : x);
+    uint32_t wy = (y == 0 ? CW_USEDEFAULT : y);
+	hwnd = CreateWindowA("window", windowTitle, WS_OVERLAPPEDWINDOW, wx, wy, width, height, NULL, NULL, hinst, NULL);
     hInst = hinst;
 	if (hwnd == NULL)
 		return false;
