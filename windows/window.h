@@ -8,6 +8,7 @@ struct Window
 {
 	HWND hwnd = 0;
     HINSTANCE hInst = 0;
+    HDC dc = 0;
 	bool exists = false;
 	bool quitOnDestroy = false;
 
@@ -82,6 +83,8 @@ const bool Window::Create(const char *windowTitle, const uint32_t x, const uint3
 	if (hwnd == NULL)
 		return false;
 	ShowWindow(hwnd, SW_SHOW);
+    if (initForGL)
+        dc = GetDC(hwnd);
 	exists = true;
 	return true;
 }
@@ -112,9 +115,15 @@ Window::~Window()
 
 void Window::Destroy()
 {
-    if (hwnd != 0)
+    if (dc != NULL)
+    {
+        ReleaseDC(hwnd, dc);
+        dc = NULL;
+    }
+    if (hwnd != NULL)
     {
         DestroyWindow(hwnd);
+        hwnd = NULL;
         UnregisterClassA("window", hInst);
     }
 	exists = false;
