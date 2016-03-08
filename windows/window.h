@@ -112,8 +112,11 @@ Window::~Window()
 
 void Window::Destroy()
 {
-	if (hwnd != 0)
-		DestroyWindow(hwnd);
+    if (hwnd != 0)
+    {
+        DestroyWindow(hwnd);
+        UnregisterClassA("window", hInst);
+    }
 	exists = false;
 }
 #endif
