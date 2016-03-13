@@ -25,7 +25,6 @@ struct Window
 	static void UnusedMessage(const MSG *msg);
 };
 
-#ifdef WINDOW_IMPL
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)
 
@@ -155,5 +154,4 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
 	return ENTRYPOINT(__argc, __argv);
 }
-#endif
 #endif
