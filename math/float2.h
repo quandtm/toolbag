@@ -21,8 +21,8 @@ struct float2
     INLINE float x() const { return _mm_cvtss_f32(m); }
     INLINE float y() const { return _mm_cvtss_f32(_mm_shuffle_ps(m, m, _MM_SHUFFLE(1, 1, 1, 1))); }
 
-    INLINE void setx(const float x) { m = _mm_move_ss(m, _mm_set_ss(x)); }
-    INLINE void sety(const float y)
+    INLINE void setX(const float x) { m = _mm_move_ss(m, _mm_set_ss(x)); }
+    INLINE void setY(const float y)
     {
         __m128 t = _mm_move_ss(m, _mm_set_ss(y));
         t = _mm_shuffle_ps(t, t, _MM_SHUFFLE(3, 2, 0, 0));

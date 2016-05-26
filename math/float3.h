@@ -90,6 +90,7 @@ INLINE bool3 operator<=(float3 a, float3 b) { a.m = _mm_cmple_ps(a.m, b.m); retu
 INLINE bool3 operator>=(float3 a, float3 b) { a.m = _mm_cmpge_ps(a.m, b.m); return a; }
 INLINE bool3 operator<(float3 a, float3 b) { a.m = _mm_cmplt_ps(a.m, b.m); return a; }
 INLINE bool3 operator>(float3 a, float3 b) { a.m = _mm_cmpgt_ps(a.m, b.m); return a; }
+
 INLINE unsigned mask(float3 a) { return _mm_movemask_ps(a.m) & 7; }
 INLINE bool any(float3 a) { return mask(a) != 0; }
 INLINE bool all(float3 a) { return mask(a) == 7; }
