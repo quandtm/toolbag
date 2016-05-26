@@ -1,8 +1,7 @@
 #pragma once
 #include <xmmintrin.h>
 #include "commonmath.h"
-
-EXTCONST vconstu v3signbits = { 0x80000000, 0x80000000, 0x80000000, 0x80000000 };
+#include "float2.h"
 
 // Standard data type for storage
 struct vec3
@@ -16,6 +15,7 @@ struct float3
     INLINE explicit float3(float x, float y, float z) { m = _mm_set_ps(z, z, y, x); }
     INLINE explicit float3(float v) { m = _mm_set_ps(v, v, v, v); }
     INLINE explicit float3(const vec3 v) { m = _mm_set_ps(v.z, v.z, v.y, v.x); }
+    INLINE explicit float3(const vec2 v) { m = _mm_set_ps(v.y, v.y, v.y, v.x); }
     INLINE explicit float3(const float *p) { m = _mm_set_ps(p[2], p[2], p[1], p[0]); }
     INLINE explicit float3(__m128 v) { m = v; }
 
@@ -104,7 +104,7 @@ INLINE bool all(float3 a) { return mask(a) == 7; }
 float3 min(float3 a, float3 b) { a.m = _mm_min_ps(a.m, b.m); return a; }
 float3 max(float3 a, float3 b) { a.m = _mm_max_ps(a.m, b.m); return a; }
 
-INLINE float3 abs(float3 a) { a.m = _mm_andnot_ps(v3signbits, a.m); return a; }
+INLINE float3 abs(float3 a) { a.m = _mm_andnot_ps(vecsignbits, a.m); return a; }
 INLINE float3 cross(float3 a, float3 b) { return (a.zxy() * b - a * b.zxy()).zxy(); }
 INLINE float sum(float3 a) { return a.x() + a.y() + a.z(); }
 INLINE float dot(float3 a, float3 b) { return sum(a * b); }

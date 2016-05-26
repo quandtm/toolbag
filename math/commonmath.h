@@ -13,3 +13,4 @@ struct vconstu
     union { uint32_t u[4]; __m128 v; };
     INLINE operator __m128() const { return v; }
 };
+EXTCONST vconstu vecsignbits = { 0x80000000, 0x80000000, 0x80000000, 0x80000000 };
