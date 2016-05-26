@@ -39,11 +39,13 @@ struct float3
         m = _mm_move_ss(t, m);
     }
 
-    INLINE float3 xxx() { return float3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(0, 0, 0, 0))); }
-    INLINE float3 xzx() { return float3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(0, 0, 2, 0))); }
-    INLINE float3 yzx() { return float3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(0, 0, 2, 1))); }
-    INLINE float3 zxy() { return float3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(0, 2, 0, 1))); }
-    INLINE float3 zyx() { return float3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(0, 0, 1, 2))); }
+    INLINE float3 xxx() const { return float3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(0, 0, 0, 0))); }
+    INLINE float3 xzx() const { return float3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(0, 0, 2, 0))); }
+    INLINE float3 yzx() const { return float3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(0, 0, 2, 1))); }
+    INLINE float3 zxy() const { return float3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(0, 2, 0, 1))); }
+    INLINE float3 zyx() const { return float3(_mm_shuffle_ps(m, m, _MM_SHUFFLE(0, 0, 1, 2))); }
+
+    INLINE float2 xy() const { return float2(m); }
 
     INLINE void store(float *p) const { p[0] = x(); p[1] = y(); p[2] = z(); }
 

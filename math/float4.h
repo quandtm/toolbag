@@ -52,6 +52,9 @@ struct float4
     INLINE float4 zzzz() const { return float4(_mm_shuffle_ps(m, m, _MM_SHUFFLE(2, 2, 2, 2))); }
     INLINE float4 wwww() const { return float4(_mm_shuffle_ps(m, m, _MM_SHUFFLE(3, 3, 3, 3))); }
 
+    INLINE float3 xyz() const { return float3(m); }
+    INLINE float2 xy() const { return float2(m); }
+
     INLINE void store(float *p) const { p[0] = x(); p[1] = y(); p[2] = z(); p[3] = w(); }
 
     INLINE float operator[] (const uint32_t i) const { return m.m128_f32[i]; }
