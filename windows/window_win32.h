@@ -150,7 +150,7 @@ void Window::Destroy()
 #define ENTRYPOINT main
 #endif
 int _cdecl ENTRYPOINT(int argc, char **argv);
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
 	return ENTRYPOINT(__argc, __argv);
 }
