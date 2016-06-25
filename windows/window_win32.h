@@ -1,5 +1,5 @@
-#pragma once
-#ifdef _WINDOWS
+#ifndef TOOLBAG_WINDOW_WIN32_H
+#define TOOLBAG_WINDOW_WIN32_H
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <stdint.h>
@@ -24,7 +24,11 @@ struct Window
 
 	static void UnusedMessage(const MSG *msg);
 };
+#endif
 
+#ifdef TOOLBAG_WINDOW_WIN32_IMPL
+#ifndef TOOLBAG_WINDOW_WIN32_IMPL_GUARD
+#define TOOLBAG_WINDOW_WIN32_IMPL_GUARD
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)
 
@@ -142,7 +146,6 @@ void Window::Destroy()
     }
 	exists = false;
 }
-#endif
 
 #ifdef WINMAIN_WRAPPER
 #include <stdlib.h>
@@ -154,4 +157,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
 	return ENTRYPOINT(__argc, __argv);
 }
-#endif
+#endif // WINMAIN_WRAPPER
+#endif // TOOLBAG_WINDOW_WIN32_IMPL_GUARD
+#endif // TOOLBAG_WINDOW_WIN32_IMPL
