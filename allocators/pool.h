@@ -1,5 +1,5 @@
-#pragma once
-#include <stdint.h>
+#ifndef TOOLBAG_POOL_H
+#define TOOLBAG_POOL_H
 
 namespace allocators
 {
@@ -8,38 +8,43 @@ namespace allocators
     public:
         PoolAllocator& operator=(const PoolAllocator&) = default;
 
-        bool init(const uint64_t poolSize, void *startPtr);
-        void* alloc(const uint64_t size);
+        bool init(const size_t poolSize, void *startPtr);
+        void* alloc(const size_t size);
         void free(void *ptr);
-        
+
     private:
         struct Header
         {
-            uint32_t length; // Excluding header (in bytes)
-            uint32_t prevLength; // Excluding header (in bytes)
+            size_t length; // Excluding header (in bytes)
+            size_t prevLength; // Excluding header (in bytes)
             bool allocated;
 
             inline Header* prevHeader() const
             {
-                return (Header*)((uint64_t)this - prevLength);
+                return (Header*)((size_t)this - prevLength);
             }
 
             inline Header* nextHeader() const
             {
-                return (Header*)((uint64_t)this + length);
+                return (Header*)((size_t)this + length);
             }
 
             inline void* data() const
             {
-                return (void*)((uint64_t)this + sizeof(Header));
+                return (void*)((size_t)this + sizeof(Header));
             }
         };
 
         Header *first;
-        uint64_t totalSize;
+        size_t totalSize;
     };
+}
+#endif
 
-    bool PoolAllocator::init(const uint64_t poolSize, void *startPtr)
+#ifdef TOOLBAG_POOL_IMPL
+namespace allocators
+{
+    bool PoolAllocator::init(const size_t poolSize, void *startPtr)
     {
         if (poolSize == 0 || startPtr == nullptr || poolSize < sizeof(Header)) return false;
         first = (Header*)startPtr;
@@ -52,12 +57,12 @@ namespace allocators
         return true;
     }
 
-    void* PoolAllocator::alloc(const uint64_t size)
+    void* PoolAllocator::alloc(const size_t size)
     {
         // Find the first Header that is not allocated and is >= the requested size
-        uint64_t fullSz = size + sizeof(Header);
+        size_t fullSz = size + sizeof(Header);
         Header *cur = first;
-        while ((uint64_t)cur < ((uint64_t)first + totalSize))
+        while ((size_t)cur < ((size_t)first + totalSize))
         {
             if (cur->allocated || cur->length < fullSz)
             {
@@ -66,7 +71,7 @@ namespace allocators
             else
             {
                 cur->allocated = true;
-                uint64_t leftover = cur->length - fullSz;
+                size_t leftover = cur->length - fullSz;
                 cur->length = fullSz;
                 // Only split if the leftover space can fit another header + some more data
                 if (leftover > sizeof(Header))
@@ -84,14 +89,14 @@ namespace allocators
 
     void PoolAllocator::free(void *ptr)
     {
-        Header *toFree = (Header*)((uint64_t)ptr - sizeof(Header));
-        if (!toFree || ((uint64_t)toFree < (uint64_t)first)) return;
+        Header *toFree = (Header*)((ptrdiff_t)ptr - sizeof(Header));
+        if (!toFree || ((ptrdiff_t)toFree < (ptrdiff_t)first)) return;
 
         toFree->allocated = false;
         // Check if we need to merge with the next block
         Header *next = toFree->nextHeader();
         Header *nextNext = nullptr;
-        if ((uint64_t)next < ((uint64_t)first + totalSize))
+        if ((size_t)next < ((size_t)first + totalSize))
         {
             if (next->allocated)
             {
@@ -100,7 +105,7 @@ namespace allocators
             else
             {
                 toFree->length += next->length;
-                if ((uint64_t)nextNext < ((uint64_t)first + totalSize))
+                if ((size_t)nextNext < ((size_t)first + totalSize))
                     nextNext = next->nextHeader();
             }
         }
@@ -108,7 +113,7 @@ namespace allocators
 
         // Check if we need to merge with the previous block
         Header *prev = toFree->prevHeader();
-        if ((uint64_t)prev >= (uint64_t)first && !prev->allocated)
+        if (((size_t)prev >= (size_t)first) && !prev->allocated)
         {
             prev->length += toFree->length;
             blockLen = prev->length;
@@ -118,3 +123,4 @@ namespace allocators
             nextNext->prevLength = blockLen;
     }
 }
+#endif
