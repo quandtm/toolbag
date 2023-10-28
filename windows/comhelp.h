@@ -1,4 +1,5 @@
 #pragma once
+#include <guiddef.h>
 
 template <typename ComType> void SafeRelease(ComType*& Ptr)
 {
@@ -15,9 +16,9 @@ template <typename T> class ComPtr
     ComPtr() noexcept = default;
     ~ComPtr() noexcept
     {
-        Destroy();
+        Reset();
     }
-    explicit ComPtr(T* const Target) noexcept : Ptr(Target)
+    ComPtr(T* const Target) noexcept : Ptr(Target)
     {
     }
     explicit ComPtr(const ComPtr<T>& Other) noexcept = delete;
@@ -28,50 +29,109 @@ template <typename T> class ComPtr
     }
 
     ComPtr<T>& operator=(const ComPtr<T>&) noexcept = delete;
-    ComPtr<T>& operator=(ComPtr<T>&& Other) noexcept
+    ComPtr<T>& operator=(ComPtr<T>& Other) noexcept
     {
-        if (this == &Other)
+        if (Ptr == Other.Ptr)
         {
             return *this;
         }
 
-        Destroy();
+        Reset();
         Ptr = Other.Ptr;
         Other.Ptr = nullptr;
 
         return *this;
     }
+    ComPtr<T>& operator=(ComPtr<T>&& Other) noexcept
+    {
+        if (Ptr == Other.Ptr)
+        {
+            return *this;
+        }
 
-    bool operator==(const ComPtr<T>& rhs) const noexcept
+        Reset();
+        Ptr = Other.Ptr;
+        Other.Ptr = nullptr;
+
+        return *this;
+    }
+    ComPtr<T>& operator=(T*&& Other) noexcept
+    {
+        if (Ptr == Other)
+        {
+            return *this;
+        }
+        Reset();
+        Ptr = Other;
+        return *this;
+    }
+
+    template <typename OtherType> bool As(ComPtr<OtherType>& Other) const
+    {
+        if (IsValid())
+        {
+            OtherType* tempPtr;
+            if (Ptr->QueryInterface(&tempPtr) >= 0)
+            {
+                Other = tempPtr;
+                return Other.IsValid();
+            }
+        }
+        return false;
+    }
+
+    template <typename OtherType> bool From(const ComPtr<OtherType>& Other)
+    {
+        return Other.As(*this);
+    }
+
+    [[nodiscard]] bool operator==(const ComPtr<T>& rhs) const noexcept
     {
         return Ptr == rhs.Ptr;
     }
 
-    bool operator==(const T* rhs) const noexcept
+    [[nodiscard]] bool operator==(const T* rhs) const noexcept
     {
         return Ptr == rhs;
     }
 
-    bool IsValid() const
+    [[nodiscard]] bool IsValid() const
     {
         return Ptr != nullptr;
     }
 
     T* operator->() const
     {
-        return *Ptr;
+        return Ptr;
     }
 
-    T* Get() const
+    [[nodiscard]] T* Get() const
     {
         return Ptr;
     }
 
-  private:
-    void Destroy()
+    [[nodiscard]] T** GetAddress()
+    {
+        return &Ptr;
+    }
+
+    [[nodiscard]] void** GetVoidAddress()
+    {
+        return reinterpret_cast<void**>(&Ptr);
+    }
+
+    [[nodiscard]] const IID& GetUUID() const
+    {
+        return __uuidof(T);
+    }
+
+    void Reset()
     {
         SafeRelease(Ptr);
     }
 
+  private:
     T* Ptr = nullptr;
 };
+
+#define IIDOF(comptr) (comptr).GetUUID(), (comptr).GetVoidAddress()
