@@ -130,7 +130,7 @@ template <typename T> class ComPtr
         SafeRelease(Ptr);
     }
 
-  private:
+  protected:
     T* Ptr = nullptr;
 };
 

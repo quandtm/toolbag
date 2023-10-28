@@ -16,3 +16,10 @@ template <typename T> inline void ZeroMem(T& Dest)
 {
     memset(&Dest, 0, sizeof(Dest));
 }
+
+template <typename T> void Swap(T& A, T& B)
+{
+    T tmp = A;
+    A = B;
+    B = tmp;
+}
