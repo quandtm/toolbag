@@ -90,6 +90,7 @@ bool Window::Create(const char* windowTitle,
     cl.lpfnWndProc = WndProc;
     cl.hInstance = hinst;
     cl.lpszClassName = "window";
+    cl.hIcon = LoadCursor(nullptr, IDC_ARROW);
     ATOM c = RegisterClassA(&cl);
     if (c == 0)
         return false;
@@ -98,7 +99,7 @@ bool Window::Create(const char* windowTitle,
     uint32_t wy = (y == 0 ? CW_USEDEFAULT : y);
     hwnd = CreateWindowA("window", windowTitle, WS_OVERLAPPEDWINDOW, wx, wy, width, height, NULL, NULL, hinst, NULL);
     hInst = hinst;
-    if (hwnd == NULL)
+    if (hwnd == nullptr)
         return false;
     if (autoShow)
         ShowWindow(hwnd, SW_SHOW);
@@ -110,19 +111,19 @@ bool Window::Create(const char* windowTitle,
 
 void Window::Show()
 {
-    if (hwnd != NULL)
+    if (hwnd != nullptr)
         ShowWindow(hwnd, SW_SHOW);
 }
 
 void Window::Hide()
 {
-    if (hwnd != NULL)
+    if (hwnd != nullptr)
         ShowWindow(hwnd, SW_HIDE);
 }
 
 bool Window::NextMessage(MSG* msg, const bool thisWindowOnly)
 {
-    BOOL ret = PeekMessageA(msg, (thisWindowOnly ? hwnd : NULL), 0, 0, PM_REMOVE);
+    const BOOL ret = PeekMessageA(msg, (thisWindowOnly ? hwnd : nullptr), 0, 0, PM_REMOVE);
     if (msg->message == WM_DESTROY && hwnd == ParamsToHwnd(msg->wParam, msg->lParam))
     {
         exists = false;
